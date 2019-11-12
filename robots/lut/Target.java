@@ -1,49 +1,32 @@
 package lut;
 
-import java.awt.geom.*;
+import java.awt.geom.Point2D;
 
-class Target
-{
-  String name;
-  public double bearing;
-  public double head;
-  public long ctime;
-  public double speed;
-  public double x, y;
-  public double distance;
-  public double changehead;
-  public double energy;
+public class Target {
 
-  public Point2D.Double guessPosition(long when)
-  {
-    double diff = when - ctime;
-    double newY, newX;
+    String name;
+    double bearing;
+    double heading;
+    long time;
+    double velocity;
+    double x, y;
+    double distance;
+    double changeHeading;
+    double energy;
 
-    /**if the change in heading is significant, use circular targeting**/
-    if (Math.abs(changehead) > 0.00001)
-    {
-      double radius = speed/changehead;
-      double tothead = diff * changehead;
-      newY = y + (Math.sin(head + tothead) * radius) - (Math.sin(head) * radius);
-      newX = x + (Math.cos(head) * radius) - (Math.cos(head + tothead) * radius);
+    public Point2D.Double predictPosition(long when) {
+        double deltaTime = when - time;
+        double newY, newX;
+        if (Math.abs(changeHeading) > 0.00001) {
+            double radius = velocity / changeHeading;
+            double deltaHeading = deltaTime * changeHeading;
+            newY = y + (Math.sin(heading + deltaHeading) * radius) - (Math.sin(heading) * radius);
+            newX = x + (Math.cos(heading) * radius) - (Math.cos(heading + deltaHeading) * radius);
+        } else {
+            newY = y + Math.cos(heading) * velocity * deltaTime;
+            newX = x + Math.sin(heading) * velocity * deltaTime;
+        }
+        return new Point2D.Double(newX, newY);
     }
-    /**If the change in heading is insignificant, use linear**/
-    else {
-      newY = y + Math.cos(head) * speed * diff;
-      newX = x + Math.sin(head) * speed * diff;
-    }
-    return new Point2D.Double(newX, newY);
-  }
 
-  public double guessX(long when)
-  {
-    long diff = when - ctime;
-    System.out.println(diff);
-    return x+Math.sin(head)*speed*diff;
-  }
-  public double guessY(long when)
-  {
-    long diff = when - ctime;
-    return y+Math.cos(head)*speed*diff;
-  }
 }
