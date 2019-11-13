@@ -39,7 +39,7 @@ public class Learner {
         prevAction = action;
     }
 
-    public int selectAction(int state, long time) {
+    public int selectAction(int state) {
         double qValue;
         double sum = 0.0;
         double[] value = new double[Action.NUM_ROBOT_ACTIONS];
