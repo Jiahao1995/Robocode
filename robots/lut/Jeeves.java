@@ -3,7 +3,6 @@ package lut;
 import robocode.*;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -37,7 +36,8 @@ public class Jeeves extends AdvancedRobot {
     static private int numRounds = 0;
     static private int numWins = 0;
 
-    private boolean interReward = false;
+    private boolean interReward = true;
+    private boolean isQLearning = false;
 
     public void run() {
         lut = new LUT();
@@ -49,7 +49,6 @@ public class Jeeves extends AdvancedRobot {
         setColors(Color.green, Color.white, Color.green);
         setAdjustGunForRobotTurn(true);
         setAdjustRadarForGunTurn(true);
-//        turnRadarRightRadians(2 * PI);
         execute();
 
         while (true) {
@@ -91,67 +90,18 @@ public class Jeeves extends AdvancedRobot {
             execute();
             turnRadarRightRadians(2 * PI);
             state = getState();
-            learner.offPolicyLearn(state, action, reward);
+            if (isQLearning)
+                learner.offPolicyLearn(state, action, reward);
+            else
+                learner.onPolicyLearn(state, action, reward);
 
             reward = 0.0;
             isHitWall = 0;
             isHitByBullet = 0;
         }
-
-//        while (true) {
-//            robotMove();
-//            firePower = 400 / target.distance;
-//            if (firePower > 3)
-//                firePower = 3;
-//            radarRotate();
-//            gunRotate();
-//            if (getGunHeat() == 0)
-//                setFire(firePower);
-//            execute();
-//        }
-
     }
 
-    private void robotMove() {
-        int state = getState();
-        int action = learner.selectAction(state);
-        out.println("Action selected: " + action);
-        learner.offPolicyLearn(state, action, reward);
-        reward = 0.0;
-        isHitWall = 0;
-        isHitByBullet = 0;
 
-        switch (action) {
-            case Action.ROBOT_AHEAD:
-                setAhead(Action.ROBOT_MOVE_DISTANCE);
-                break;
-            case Action.ROBOT_BACK:
-                setBack(Action.ROBOT_MOVE_DISTANCE);
-                break;
-            case Action.ROBOT_AHEAD_TURN_LEFT:
-                setAhead(Action.ROBOT_MOVE_DISTANCE);
-                setTurnLeft(Action.ROBOT_TURN_DEGREE);
-                break;
-            case Action.ROBOT_AHEAD_TURN_RIGHT:
-                setAhead(Action.ROBOT_MOVE_DISTANCE);
-                setTurnRight(Action.ROBOT_TURN_DEGREE);
-                break;
-            case Action.ROBOT_BACK_TURN_LEFT:
-                setAhead(Action.ROBOT_MOVE_DISTANCE);
-                setTurnRight(Action.ROBOT_TURN_DEGREE);
-                break;
-            case Action.ROBOT_BACK_TURN_RIGHT:
-                setAhead(target.bearing);
-                setTurnLeft(Action.ROBOT_TURN_DEGREE);
-                break;
-            case Action.ROBOT_FIRE:
-                ahead(0);
-                turnLeft(0);
-                break;
-            default:
-                break;
-        }
-    }
 
     private int getState() {
         int heading = State.getHeadingIndex(getHeading());
@@ -178,35 +128,6 @@ public class Jeeves extends AdvancedRobot {
             fire(1);
     }
 
-    private void radarRotate() {
-        double radarOffset;
-        if (getTime() - target.time > 4) { 
-            radarOffset = 4 * PI;
-        } else {
-            radarOffset = getRadarHeadingRadians() - (Math.PI / 2 - Math.atan2(target.y - getY(), target.x - getX()));
-            radarOffset = normaliseBearing(radarOffset);
-            if (radarOffset < 0)
-                radarOffset -= PI / 10;
-            else
-                radarOffset += PI / 10;
-        }
-        setTurnRadarLeftRadians(radarOffset);
-    }
-
-//    private void gunRotate() {
-//        long time;
-//        long nextTime;
-//        Point2D.Double p;
-//        p = new Point2D.Double(target.x, target.y);
-//        for (int i = 0; i < 20; i++) {
-//            nextTime = (int) Math.round((getRange(getX(), getY(), p.x, p.y) / (20 - (3 * firePower))));
-//            time = getTime() + nextTime - 10;
-//            p = target.predictPosition(time);
-//        }
-//        double gunOffset = getGunHeadingRadians() - (Math.PI/2 - Math.atan2(p.y - getY(), p.x - getX()));
-//        setTurnGunLeftRadians(normaliseBearing(gunOffset));
-//    }
-
     private double normaliseBearing(double bearing) {
         if (bearing > PI)
             bearing -= 2 * PI;
@@ -214,12 +135,6 @@ public class Jeeves extends AdvancedRobot {
             bearing += 2 * PI;
         return bearing;
     }
-
-//    private double getRange(double x1, double y1, double x2, double y2) {
-//        double deltaX = x2 - x1;
-//        double deltaY = y2 - y1;
-//        return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-//    }
 
     public void onBulletHit(BulletHitEvent event) {
         if (target.name.equals(event.getName())) {

@@ -1,9 +1,11 @@
 package lut;
 
+import java.util.Random;
+
 public class Learner {
-    public static final double LEARNING_RATE = 0.1;
-    public static final double DISCOUNT_FACTOR = 0.9;
-    public static final double EXPLOITATION_RATE = 0.2;
+    private static final double LEARNING_RATE = 0.1;
+    private static final double DISCOUNT_FACTOR = 0.9;
+    private static final double EXPLOITATION_RATE = 0.2;
     private int prevState;
     private int prevAction;
     private boolean isFirst = true;
@@ -19,7 +21,6 @@ public class Learner {
         else {
             double oldQValue = lut.getQValue(prevState, prevAction);
             double newQValue = (1 - LEARNING_RATE) * oldQValue + LEARNING_RATE * (reinforcement + DISCOUNT_FACTOR * lut.getMaxQValue(state));
-//            System.out.println("Old Q-Value: " + oldQValue + ", New Q-Value: " + newQValue + ", Different: " + (newQValue - oldQValue));
             lut.setQValue(prevState, prevAction, newQValue);
         }
         prevState = state;
@@ -32,7 +33,6 @@ public class Learner {
         else {
             double oldQValue = lut.getQValue(prevState, prevAction);
             double newQValue = (1 - LEARNING_RATE) * oldQValue + LEARNING_RATE * (reinforcement + DISCOUNT_FACTOR * lut.getQValue(state, action));
-//            System.out.println("Old Q-Value: " + oldQValue + ", New Q-Value: " + newQValue + ", Different: " + (newQValue - oldQValue));
             lut.setQValue(prevState, prevAction, newQValue);
         }
         prevState = state;

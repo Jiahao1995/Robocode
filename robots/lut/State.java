@@ -2,11 +2,11 @@ package lut;
 
 public class State {
 
-    public static final int NUM_HEADING = 4;
-    public static final int NUM_DISTANCE = 20;
-    public static final int NUM_BEARING = 4;
-    public static final int NUM_HIT_WALL = 2;
-    public static final int NUM_HIT_BY_BULLET = 2;
+    private static final int NUM_HEADING = 4;
+    private static final int NUM_DISTANCE = 20;
+    private static final int NUM_BEARING = 4;
+    private static final int NUM_HIT_WALL = 2;
+    private static final int NUM_HIT_BY_BULLET = 2;
     public static final int NUM_ROBOT_STATES;
     public static final int[][][][][] MAPPING;
 
