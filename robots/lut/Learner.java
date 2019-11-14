@@ -3,7 +3,7 @@ package lut;
 public class Learner {
     public static final double LEARNING_RATE = 0.1;
     public static final double DISCOUNT_FACTOR = 0.9;
-    public static final double EXPLOITATION_RATE = 1;
+    public static final double EXPLOITATION_RATE = 0.2;
     private int prevState;
     private int prevAction;
     private boolean isFirst = true;

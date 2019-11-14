@@ -37,7 +37,7 @@ public class Jeeves extends AdvancedRobot {
     static private int numRounds = 0;
     static private int numWins = 0;
 
-    private boolean interReward = true;
+    private boolean interReward = false;
 
     public void run() {
         lut = new LUT();
@@ -307,7 +307,7 @@ public class Jeeves extends AdvancedRobot {
             writer = new PrintStream(new RobocodeFileOutputStream(getDataFile("record.txt").getAbsolutePath(), true));
             if (numRounds == 49) {
                 double winRate = (double) numWins / 50;
-                writer.println(numRounds + "\t" + winRate);
+                writer.println(winRate);
                 numRounds = 0;
                 numWins = 0;
                 if (writer.checkError()) {
@@ -339,7 +339,7 @@ public class Jeeves extends AdvancedRobot {
             writer = new PrintStream(new RobocodeFileOutputStream(getDataFile("record.txt").getAbsolutePath(), true));
             if (numRounds == 49) {
                 double winRate = (double) numWins / 50;
-                writer.println(numRounds + "\t" + winRate);
+                writer.println(winRate);
                 numRounds = 0;
                 numWins = 0;
                 if (writer.checkError()) {
